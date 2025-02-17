@@ -2,17 +2,30 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"package-version-updater/logger"
 	"regexp"
 	"strconv"
 )
+
+type VersionUpdater struct {
+	Logger        *logger.Logger
+	FilePath      string
+	Data          []byte
+	UpdatedData   string
+	Expression    *regexp.Regexp
+	VersionString string
+	Versions      []string
+	Major         int64
+	Minor         int64
+	Patch         int64
+}
 
 // Read the file and return the data in bytes
 func (vu *VersionUpdater) ReadFile() {
 	data, err := os.ReadFile(vu.FilePath)
 	if err != nil {
-		log.Fatal(err)
+		vu.Logger.Fatal(err.Error())
 	}
 
 	vu.Data = data
@@ -37,17 +50,17 @@ func (vu *VersionUpdater) GetVersion(filePath string) {
 func (vu *VersionUpdater) ExtractVersionsInt() {
 	major, err := strconv.ParseInt(vu.Versions[0], 10, 64)
 	if err != nil {
-		log.Fatal(err)
+		vu.Logger.Fatal(err.Error())
 	}
 
 	minor, err := strconv.ParseInt(vu.Versions[1], 10, 64)
 	if err != nil {
-		log.Fatal(err)
+		vu.Logger.Fatal(err.Error())
 	}
 
 	patch, err := strconv.ParseInt(vu.Versions[2], 10, 64)
 	if err != nil {
-		log.Fatal(err)
+		vu.Logger.Fatal(err.Error())
 	}
 
 	vu.Major = major
@@ -93,6 +106,6 @@ func (vu *VersionUpdater) UpdatePackageBytes() {
 func (vu *VersionUpdater) WritePackageFile() {
 	err := os.WriteFile(vu.FilePath, []byte(vu.UpdatedData), os.ModePerm)
 	if err != nil {
-		log.Fatal(err)
+		vu.Logger.Fatal(err.Error())
 	}
 }

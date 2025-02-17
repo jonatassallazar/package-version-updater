@@ -1,9 +1,8 @@
 package core
 
 import (
-	"log"
 	"os"
-	"regexp"
+	"package-version-updater/logger"
 	"strings"
 )
 
@@ -13,25 +12,16 @@ type PackageUpdater struct {
 	IsMajor           bool
 	IsMinor           bool
 	IsPatch           bool
-}
-
-type VersionUpdater struct {
-	FilePath      string
-	Data          []byte
-	UpdatedData   string
-	Expression    *regexp.Regexp
-	VersionString string
-	Versions      []string
-	Major         int64
-	Minor         int64
-	Patch         int64
+	Logger            *logger.Logger
 }
 
 func (p *PackageUpdater) ReadDir(dir string) []os.DirEntry {
+	p.Logger.Debug("Reading directory: " + dir)
+
 	// read os directory
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err)
+		p.Logger.Fatal(err.Error())
 	}
 
 	return files
@@ -47,11 +37,17 @@ func (p *PackageUpdater) ScanAllFiles(dir string) {
 
 		// update the package.json file
 		if fileName == "package.json" || (p.CustomPackageName != "" && fileName == p.CustomPackageName) {
+			p.Logger.Log("Updating package version: " + dir + fileName)
+
 			p.UpdatePackageVersion(dir + fileName)
+
+			p.Logger.Log("Package version updated.")
 		}
 
 		// if the file is a directory, scan it (support for nested directories)
 		if file.IsDir() && !strings.Contains(path, "node_modules") && p.NestedScan {
+			p.Logger.Debug("Scanning nested directory: " + path)
+
 			p.ScanAllFiles(path)
 		}
 	}

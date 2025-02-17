@@ -6,34 +6,43 @@ import (
 )
 
 type Logger struct {
+	Level uint8
 }
 
 // ANSI color codes - https://en.wikipedia.org/wiki/ANSI_escape_code
 const (
-	FGBlack  = "30"
-	FGRed    = "31"
-	FGGreen  = "32"
-	FGYellow = "33"
-	FGBlue   = "34"
-	FGPurple = "35"
-	FGCyan   = "36"
-	FGWhite  = "37"
-	BGBlack  = "40"
-	BGRed    = "41"
-	BGGreen  = "42"
-	BGYellow = "43"
-	BGBlue   = "44"
-	BGPurple = "45"
-	BGCyan   = "46"
-	BGWhite  = "47"
+	FGBlack  string = "30"
+	FGRed    string = "31"
+	FGGreen  string = "32"
+	FGYellow string = "33"
+	FGBlue   string = "34"
+	FGPurple string = "35"
+	FGCyan   string = "36"
+	FGWhite  string = "37"
+	BGBlack  string = "40"
+	BGRed    string = "41"
+	BGGreen  string = "42"
+	BGYellow string = "43"
+	BGBlue   string = "44"
+	BGPurple string = "45"
+	BGCyan   string = "46"
+	BGWhite  string = "47"
+)
+const (
+	DEBUG uint8 = 5
+	INFO  uint8 = 4
+	WARN  uint8 = 3
+	ERROR uint8 = 2
+	FATAL uint8 = 1
+	PANIC uint8 = 0
 )
 
-func (l *Logger) message(color, message string) string {
-	return fmt.Sprintf("\033[%sm[%s] %s \033[0m", color, time.Now().Format(time.RFC1123Z), message)
+func (l *Logger) message(level, color, message string) string {
+	return fmt.Sprintf("\033[%sm %s | [%s] %s \033[0m", color, level, time.Now().Format(time.RFC1123Z), message)
 }
 
-func (l *Logger) rawMessage(message string) string {
-	return fmt.Sprintf("\n[%s] %s", time.Now().Format(time.RFC1123Z), message)
+func (l *Logger) rawMessage(level, message string) string {
+	return fmt.Sprintf("\n%s | [%s] %s", level, time.Now().Format(time.RFC1123Z), message)
 }
 
 func (l *Logger) BreakLine() {
@@ -41,50 +50,76 @@ func (l *Logger) BreakLine() {
 	fmt.Println()
 }
 
-func (l *Logger) Verbose(message string) {
-	color := "0;" + FGGreen
+func (l *Logger) Debug(message string) {
+	if l.Level >= DEBUG {
 
-	l.writeToLogFile(l.rawMessage(message))
+		color := "0;" + FGGreen
+		level := "DEBUG"
 
-	fmt.Println(l.message(color, message))
+		l.writeToLogFile(l.rawMessage(level, message))
+
+		fmt.Println(l.message(level, color, message))
+	}
 }
 
 func (l *Logger) Log(message string) {
-	color := "0;" + FGWhite
+	if l.Level >= INFO {
 
-	l.writeToLogFile(l.rawMessage(message))
+		color := "0;" + FGWhite
+		level := "INFO"
 
-	fmt.Println(l.message(color, message))
+		l.writeToLogFile(l.rawMessage(level, message))
+
+		fmt.Println(l.message(level, color, message))
+	}
 }
 
-func (l *Logger) Info(message string) {
-	color := "0;" + FGBlue
+func (l *Logger) Warning(message string) {
+	if l.Level >= WARN {
 
-	l.writeToLogFile(l.rawMessage(message))
+		color := "0;" + FGYellow
+		level := "WARNING"
 
-	fmt.Println(l.message(color, message))
+		l.writeToLogFile(l.rawMessage(level, message))
+
+		fmt.Println(l.message(level, color, message))
+	}
 }
 
 func (l *Logger) Error(message string) {
-	color := "0;" + FGRed
+	if l.Level >= ERROR {
 
-	l.writeToLogFile(l.rawMessage(message))
+		color := "0;" + FGRed
+		level := "ERROR"
 
-	fmt.Println(l.message(color, message))
+		l.writeToLogFile(l.rawMessage(level, message))
+
+		fmt.Println(l.message(level, color, message))
+	}
 }
 
 func (l *Logger) Fatal(message string) {
-	color := FGBlack + ";" + BGRed
+	if l.Level >= FATAL {
 
-	l.writeToLogFile(l.rawMessage(message))
+		color := FGBlack + ";" + BGRed
+		level := "FATAL"
 
-	fmt.Println(l.message(color, message))
+		l.writeToLogFile(l.rawMessage(level, message))
+
+		fmt.Println(l.message(level, color, message))
+	}
 }
 
 func (l *Logger) Panic(message string) {
-	color := FGRed + ";" + BGWhite
+	if l.Level >= PANIC {
 
-	l.writeToLogFile(l.rawMessage(message))
+		color := FGRed + ";" + BGWhite
+		level := "PANIC"
 
-	fmt.Println(l.message(color, message))
+		l.writeToLogFile(l.rawMessage(level, message))
+
+		fmt.Println(l.message(level, color, message))
+
+		panic(message)
+	}
 }

@@ -10,22 +10,26 @@ import (
 func main() {
 	logger := logger.Logger{}
 
-	logger.Log("Starting the package version updater...")
-
-	pu := core.PackageUpdater{}
+	pu := core.PackageUpdater{
+		Logger: &logger,
+	}
 
 	flag.BoolVar(&pu.NestedScan, "nested", false, "Scan nested directories")
 	flag.StringVar(&pu.CustomPackageName, "package", "", "Custom package name")
 	flag.BoolVar(&pu.IsMajor, "major", false, "Update major version")
 	flag.BoolVar(&pu.IsMinor, "minor", false, "Update minor version")
 	flag.BoolVar(&pu.IsPatch, "patch", false, "Update patch version")
+	level := flag.Uint("level", 4, "Log level - Default: 4 (INFO)")
 	rootDir := flag.String("dir", "./", "Root directory")
 
 	flag.Parse()
+	logger.Level = uint8(*level)
 
-	logger.Verbose("Nested scan: " + strconv.FormatBool((pu.NestedScan)))
-	logger.Log("Scanning all files in the directory...")
-	logger.Info("Root directory: " + *rootDir)
+	logger.Debug("Nested scan: " + strconv.FormatBool((pu.NestedScan)))
+	logger.Debug("Root directory: " + *rootDir)
+	logger.Debug("Package custom name: " + pu.CustomPackageName)
+
+	logger.Log("Starting the package version updater...")
 
 	pu.ScanAllFiles(*rootDir)
 
