@@ -24,7 +24,7 @@ Instructions on how to clone the project and compile locally.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/your-repo.git
+git clone https://github.com/jonatassallazar/package-version-updater
 
 # Navigate to the project directory
 cd package-version-updater
