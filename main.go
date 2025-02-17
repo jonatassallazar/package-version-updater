@@ -25,6 +25,10 @@ func main() {
 	flag.Parse()
 	logger.Level = uint8(*level)
 
+	if !pu.IsMajor && !pu.IsMinor && !pu.IsPatch {
+		logger.Panic("No version update type selected.")
+	}
+
 	logger.Debug("Nested scan: " + strconv.FormatBool((pu.NestedScan)))
 	logger.Debug("Root directory: " + *rootDir)
 	logger.Debug("Package custom name: " + pu.CustomPackageName)

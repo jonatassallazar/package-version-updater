@@ -3,6 +3,7 @@ package core
 import (
 	"os"
 	"package-version-updater/logger"
+	"path"
 	"strings"
 )
 
@@ -33,13 +34,14 @@ func (p *PackageUpdater) ScanAllFiles(dir string) {
 
 	for _, file := range files {
 		fileName := file.Name()
-		path := dir + fileName + "/"
+		p.Logger.Debug("Scanned file: " + fileName)
+		path := path.Join(dir, fileName)
 
 		// update the package.json file
 		if fileName == "package.json" || (p.CustomPackageName != "" && fileName == p.CustomPackageName) {
-			p.Logger.Log("Updating package version: " + dir + fileName)
+			p.Logger.Log("Updating package version: " + path)
 
-			p.UpdatePackageVersion(dir + fileName)
+			p.UpdatePackageVersion(path)
 
 			p.Logger.Log("Package version updated.")
 		}
@@ -60,6 +62,7 @@ func (p *PackageUpdater) UpdatePackageVersion(filePath string) {
 	}
 
 	vu.ReadFile()
+	vu.GetVersion()
 	vu.ExtractVersionsInt()
 	vu.UpdateVersion(p)
 	vu.UpdatePackageBytes()

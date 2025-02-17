@@ -32,7 +32,7 @@ func (vu *VersionUpdater) ReadFile() {
 }
 
 // Get the current version of the bytes data
-func (vu *VersionUpdater) GetVersion(filePath string) {
+func (vu *VersionUpdater) GetVersion() {
 	vu.Expression = regexp.MustCompile(`"version": "(\d+).(\d+).(\d+)"`)
 
 	versionBytes := vu.Expression.Find(vu.Data)
