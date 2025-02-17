@@ -45,6 +45,10 @@ func (l *Logger) rawMessage(level, message string) string {
 	return fmt.Sprintf("\n%s | [%s] %s", level, time.Now().Format(time.RFC1123Z), message)
 }
 
+func (l *Logger) SetLoggerLevel(level uint8) {
+	l.Level = level
+}
+
 func (l *Logger) BreakLine() {
 	l.writeToLogFile("\n")
 	fmt.Println()
